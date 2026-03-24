@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación: Responsive, Animaciones y Pauta Final</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --accent: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden; /* Evitar scroll general, todo ocurre en las slides */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .text-primary { color: var(--primary); }
+        .text-secondary { color: var(--secondary); }
+        .text-accent { color: var(--accent); }
+
+        /* ==========================================================================
+           SLIDES SYSTEM (CSS)
+           ========================================================================== */
+        #slideshow-container {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            background-color: var(--bg-card);
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Animación base para transiciones */
+            opacity: 0;
+            transform: translateX(100px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            visibility: hidden;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Estado Activo */
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: auto;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        /* Estado Pasado (a la izquierda) */
+        .slide.past {
+            transform: translateX(-100px) scale(0.95);
+        }
+
+        /* ==========================================================================
+           CONTROLS (NAVIGATION)
+           ========================================================================== */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 15px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-indicator {
+            font-family: 'Fira Code', monospace;
+            color: var(--text-muted);
+            font-size: 14px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ==========================================================================
+           SLIDE CONTENT STYLES
+           ========================================================================== */
+        .title-slide { text-align: center; }
+        .title-slide h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; }
+        .title-slide p { font-size: 1.5rem; color: var(--text-muted); }
+
+        .slide-header { margin-bottom: 40px; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 20px; }
+        .slide-header h2 { font-size: 3rem; display: flex; align-items: center; gap: 15px; }
+        
+        .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; height: 100%; align-items: center; }
+        
+        .content-box { font-size: 1.25rem; line-height: 1.6; color: var(--text-muted); }
+        .content-box ul { list-style: none; margin-top: 20px; }
+        .content-box li { margin-bottom: 15px; position: relative; padding-left: 30px; }
+        .content-box li::before { content: '→'; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+
+        /* Code Blocks */
+        pre {
+            background: #020617;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #334155;
+            font-size: 1.1rem;
+        }
+        code { font-family: 'Fira Code', monospace; }
+        .c-keyword { color: #c678dd; }
+        .c-prop { color: #61afef; }
+        .c-val { color: #98c379; }
+        .c-comment { color: #5c6370; font-style: italic; }
+
+        /* Taller Visual UI */
+        .taller-preview {
+            background: #0f172a;
+            border: 2px dashed #475569;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        /* Grid dinámico para el ejemplo */
+        .demo-grid {
+            display: grid;
+            gap: 10px;
+            transition: all 0.5s ease;
+        }
+        .demo-item {
+            background: var(--primary);
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Demo Animación */
+        .demo-box {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 12px;
+            margin: 20px auto;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .demo-box:hover {
+            transform: scale(1.2) rotate(15deg);
+            background: var(--secondary);
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card i { font-size: 3rem; margin-bottom: 20px; color: var(--secondary); }
+        .card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="slideshow-container">
+        
+        <!-- SLIDE 1: PORTADA -->
+        <div class="slide active title-slide" id="slide-1">
+            <span style="background: rgba(59, 130, 246, 0.2); color: var(--primary); padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin-bottom: 30px;">Módulo Frontend</span>
+            <h1>Responsive Nativos,<br><span class="text-accent">Animaciones</span> y Pauta Final</h1>
+            <p>Aprende a maquetar para todos los dispositivos usando "Mobile First" y CSS moderno.</p>
+        </div>
+
+        <!-- SLIDE 2: MOBILE FIRST -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-mobile-screen text-primary"></i> El concepto "Mobile First"</h2>
+            </div>
+            <div class="grid-2-cols">
+                <div class="content-box">
+                    <p>En lugar de diseñar para escritorio y "encoger" el contenido, diseñamos primero para el teléfono y expandimos.</p>
+                    <ul>
+                        <li><strong>Rendimiento:</strong> Los dispositivos móviles descargan menos código complejo.</li>
+                        <li><strong>Priorización:</strong> Nos obliga a mostrar solo lo más importante.</li>
+                        <li><strong>Escalabilidad:</strong> Es más fácil añadir columnas que quitarlas.</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">
+                    <div style="display: flex; gap: 20px; align-items: flex-end; justify-content: center; height: 300px;">
+                        <!-- Móvil -->
+                        <div style="width: 80px; height: 160px; border: 4px solid var(--text-muted); border-radius: 12px; position: relative;">
+                            <div style="position:absolute; bottom:5px; left:50%; transform:translateX(-50%); width:20px; height:4px; background:var(--text-muted); border-radius:2px;"></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-primary" style="font-size: 2rem; margin-bottom: 60px;"></i>
+                        <!-- Desktop -->
+                        <div style="width: 200px; height: 160px; border: 4px solid var(--primary); border-radius: 12px; position: relative; display: flex; flex-direction: column;">
+                            <div style="height: 20px; border-bottom: 4px solid var(--primary);"></div>
+                            <div style="flex-grow: 1; display:flex; gap: 4px; padding: 4px;">
+                                <div style="flex:1; background:rgba(59, 130, 246, 0.2);"></div>
+                                <div style="flex:2; background:rgba(59, 130, 246, 0.2);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: MEDIA QUERIES -->
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-laptop-code text-secondary"></i> Media Queries (@media)</h2>
+            </div>
+            <div class="grid-2-cols">
+                <div class="content-box">
+                    <p>Son condiciones lógicas en CSS. Si la pantalla cumple la condición, se aplican los estilos internos.</p>
+                    <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-left: 4px solid var(--secondary); border-radius: 0 8px 8px 0; margin-top: 20px;">
+                        <strong>Regla de oro:</strong> En Mobile First, usamos principalmente <code>min-width</code>.
+                    </div>
+                </div>
+                <pre><code><span class="c-comment">/* 1. Estilos por defecto (MÓVIL) */</span>
+.container {
+  <span class="c-prop">display</span>: flex;
+  <span class="c-prop">flex-direction</span>: <span class="c-val">column</span>;
+}
+
+<span class="c-comment">/* 2. Cuando la pantalla es >= 768px (TABLET/PC) */</span>
+<span class="c-keyword">@media</span> (<span class="c-prop">min-width</span>: <span class="c-val">768px</span>) {
+  .container {
+    <span class="c-prop">flex-direction</span>: <span class="c-val">row</span>;
+  }
+}</code></pre>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: TALLER RAPIDO -->
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-code text-accent"></i> Taller: Galería Grid (Código)</h2>
+            </div>
+            <div class="grid-2-cols">
+                <div>
+                    <h3 style="margin-bottom: 15px;">HTML</h3>
+                    <pre><code>&lt;<span class="c-prop">div</span> <span class="c-keyword">class</span>=<span class="c-val">"galeria"</span>&gt;
+  &lt;<span class="c-prop">div</span> <span class="c-keyword">class</span>=<span class="c-val">"item"</span>&gt;1&lt;/<span class="c-prop">div</span>&gt;
+  &lt;<span class="c-prop">div</span> <span class="c-keyword">class</span>=<span class="c-val">"item"</span>&gt;2&lt;/<span class="c-prop">div</span>&gt;
+  &lt;<span class="c-prop">div</span> <span class="c-keyword">class</span>=<span class="c-val">"item"</span>&gt;3&lt;/<span class="c-prop">div</span>&gt;
+&lt;/<span class="c-prop">div</span>&gt;</code></pre>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 15px;">CSS (El Truco)</h3>
+                    <pre><code><span class="c-comment">/* Para móvil (1 columna) */</span>
+.galeria {
+  <span class="c-prop">display</span>: grid;
+  <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr</span>;
+  <span class="c-prop">gap</span>: <span class="c-val">10px</span>;
+}
+
+<span class="c-comment">/* Para PC (3 columnas) */</span>
+<span class="c-keyword">@media</span> (<span class="c-prop">min-width</span>: <span class="c-val">1024px</span>) {
+  .galeria {
+    <span class="c-prop">grid-template-columns</span>: <span class="c-val">repeat(3, 1fr)</span>;
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: TALLER VISUAL -->
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-eye text-primary"></i> Taller: Galería Grid (Visual)</h2>
+            </div>
+            <div class="grid-2-cols">
+                <div class="taller-preview">
+                    <h3 style="text-align:center; color: var(--text-muted);">Vista Móvil (1fr)</h3>
+                    <div class="demo-grid" style="grid-template-columns: 1fr;">
+                        <div class="demo-item">1</div>
+                        <div class="demo-item">2</div>
+                        <div class="demo-item">3</div>
+                    </div>
+                </div>
+                <div class="taller-preview">
+                    <h3 style="text-align:center; color: var(--text-muted);">Vista PC (repeat(3, 1fr))</h3>
+                    <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="demo-item" style="background:var(--secondary);">1</div>
+                        <div class="demo-item" style="background:var(--secondary);">2</div>
+                        <div class="demo-item" style="background:var(--secondary);">3</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: ANIMACIONES -->
+        <div class="slide" id="slide-6">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-wand-magic-sparkles text-accent"></i> Animaciones Nativas</h2>
+            </div>
+            <div class="grid-2-cols">
+                <div class="content-box">
+                    <p>CSS nos permite crear micro-interacciones sin Javascript usando <code>transition</code> y <code>hover</code>.</p>
+                    <pre style="margin-top: 20px; font-size: 1rem;"><code>.caja {
+  <span class="c-prop">transition</span>: transform <span class="c-val">0.3s</span> ease;
+}
+
+.caja:hover {
+  <span class="c-prop">transform</span>: <span class="c-val">scale(1.2) rotate(15deg)</span>;
+}</code></pre>
+                </div>
+                <div style="text-align: center; border: 1px dashed #475569; border-radius: 12px; padding: 40px;">
+                    <p style="margin-bottom: 20px; color: var(--text-muted);">¡Pasa el mouse sobre el cuadro!</p>
+                    <div class="demo-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: PAUTA FINAL -->
+        <div class="slide" id="slide-7">
+            <div class="slide-header">
+                <h2><i class="fa-solid fa-list-check text-secondary"></i> Pauta Final</h2>
+            </div>
+            <div class="cards-container">
+                <div class="card">
+                    <i class="fa-solid fa-viewport"></i>
+                    <h3>Etiqueta Viewport</h3>
+                    <p style="color:var(--text-muted); font-size:0.95rem;">Nunca olvides agregar el <code>&lt;meta name="viewport"&gt;</code> en tu HTML. Sin él, el responsive no funciona.</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-percent"></i>
+                    <h3>Unidades Relativas</h3>
+                    <p style="color:var(--text-muted); font-size:0.95rem;">Evita anchos fijos (<code>width: 500px</code>). Usa porcentajes (<code>%</code>) o anchos máximos (<code>max-width: 100%</code>).</p>
+                </div>
+                <div class="card">
+                    <i class="fa-solid fa-image"></i>
+                    <h3>Imágenes Flexibles</h3>
+                    <p style="color:var(--text-muted); font-size:0.95rem;">Tus imágenes siempre deben llevar <code>max-width: 100%; height: auto;</code> para no romper el layout.</p>
+                </div>
+            </div>
+            <h3 style="text-align: center; margin-top: 40px; color: var(--primary);">¡Gracias! Fin de la presentación.</h3>
+        </div>
+
+    </div>
+
+    <!-- NAVEGACIÓN -->
+    <div class="controls">
+        <button id="btn-prev"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+        <div class="progress-indicator" id="counter">1 / 7</div>
+        <button id="btn-next">Siguiente <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT LOGIC
+         ========================================================================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const counter = document.getElementById('counter');
+            
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            // Función principal para actualizar la vista
+            function updateSlides() {
+                slides.forEach((slide, index) => {
+                    // Limpiar clases
+                    slide.classList.remove('active', 'past');
+                    
+                    if (index === currentSlide) {
+                        slide.classList.add('active'); // Slide actual
+                    } else if (index < currentSlide) {
+                        slide.classList.add('past'); // Slides anteriores se van a la izquierda
+                    }
+                    // Los slides con index > currentSlide simplemente pierden la clase y vuelven a su posición derecha por CSS
+                });
+
+                // Actualizar contador
+                counter.innerText = `${currentSlide + 1} / ${totalSlides}`;
+
+                // Deshabilitar botones en los extremos
+                btnPrev.disabled = currentSlide === 0;
+                btnNext.disabled = currentSlide === totalSlides - 1;
+            }
+
+            // Eventos de botones
+            btnNext.addEventListener('click', () => {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlides();
+                }
+            });
+
+            btnPrev.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlides();
+                }
+            });
+
+            // Soporte para flechas del teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Space') {
+                    if (currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        updateSlides();
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        updateSlides();
+                    }
+                }
+            });
+
+            // Inicializar
+            updateSlides();
+        });
+    </script>
+</body>
+</html>
